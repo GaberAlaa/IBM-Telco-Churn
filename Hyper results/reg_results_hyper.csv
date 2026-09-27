@@ -1,0 +1,6 @@
+Model,RMSE,MAE,R2,Best_Params
+Random Forest Regressor,1025.5503160017133,872.9181150392384,0.2257731568241257,"{'model__max_depth': 1, 'model__max_features': 1.0, 'model__min_samples_leaf': 1, 'model__n_estimators': 307}"
+Gradient Boosting Regressor,1026.0024766083322,873.2430495569024,0.22509029992897034,"{'model__learning_rate': np.float64(0.008263686276667369), 'model__max_depth': 1, 'model__n_estimators': 335, 'model__subsample': np.float64(0.9771414282231924)}"
+Polynomial Regression,1038.5781611280634,883.2009882530704,0.20597778828247593,{'preprocessor__num__poly__degree': 4}
+Lasso Regression,1061.7022888898243,898.1976902204729,0.17022606920473826,{'model__alpha': 7.0}
+Ridge Regression,1062.0190295164277,898.4266323076527,0.16973089777691164,{'model__alpha': 225.0}
