@@ -10,7 +10,7 @@ def load():
 
 res = load()
 
-st.title("📈 Regression: predicting CLTV")
+st.title("Regression: predicting CLTV")
 st.markdown(
     "Goal: predict a customer's **Customer Lifetime Value (CLTV)**."
     "I compared **6 regression models**."
@@ -40,15 +40,15 @@ We rank primarily on **R2 and RMSE**, and use MAE as a sanity check. All three m
 
 st.header("3. Chosen model")
 st.success(
-    "### Gradient Boosting Regressor"
+    "### Random Forest Regressor"
 
 )
 
 second = res.iloc[1]
 st.markdown(
 f"""
-**Why Gradient Boosting Regressor ?** \n
-1. It is **best on every metric**:  R2, RMSE and MAE.\n
+**Why Random Forest Regressor ?** \n
+1. It performed **best** on every metric:  R2, RMSE and MAE.\n
 """
 )
 

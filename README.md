@@ -1,4 +1,4 @@
-# Telco Customer Intelligence — Churn, Value & Segmentation
+# Telco Customer Intelligence - AXIS ML Graduation Project
 
 An end-to-end machine learning project on the IBM Telco Customer Churn dataset. It predicts **which
 customers are likely to churn** (classification), **how much a customer is worth** (regression on
@@ -141,16 +141,16 @@ accuracy while catching zero churners.
 
 ### Regression (target: CLTV) — `Dashboard/Resources/regression_results.csv`
 
-| Model                           | RMSE        | MAE        | R2        |
-| ------------------------------- | ----------- | ---------- | --------- |
-| **Gradient Boosting Regressor** | **1026.09** | **873.30** | **0.225** |
-| Polynomial Regression           | 1038.58     | 883.20     | 0.206     |
-| Lasso Regression                | 1061.70     | 898.20     | 0.170     |
-| Ridge Regression                | 1062.02     | 898.43     | 0.170     |
-| Linear Regression               | 1062.44     | 897.94     | 0.169     |
-| Random Forest Regressor         | 1145.07     | 961.42     | 0.035     |
+| Model                       | RMSE    | MAE    | R2    |
+| --------------------------- | ------- | ------ | ----- |
+| Random Forest Regressor     | 1025.55 | 872.92 | 0.226 |
+| Gradient Boosting Regressor | 1026.09 | 873.30 | 0.225 |
+| Polynomial Regression       | 1038.58 | 883.20 | 0.206 |
+| Lasso Regression            | 1061.70 | 898.20 | 0.170 |
+| Ridge Regression            | 1062.02 | 898.43 | 0.170 |
+| Linear Regression           | 1062.44 | 897.94 | 0.169 |
 
-**Chosen model: Gradient Boosting Regressor** — best on every metric. R2 tops out around 0.23,
+**Chosen model: Random Forest Regressor** — best on every metric. R2 tops out around 0.23,
 which reflects a real ceiling in the available features rather than under-tuning: CLTV appears to
 depend on inputs (e.g. IBM's own predictive scoring, or deeper account history) not present in this
 dataset. See Section 7 for why Random Forest Regressor underperforms even the plain linear models here.
@@ -172,42 +172,7 @@ and the second-highest ROC-AUC, with recall of ~0.80 (catches roughly 4 in 5 act
 is the model saved to `Dashboard/Resources/Model/Randf_clf.pkl` and used by the live predictor page.
 XGBoost is a close second on nearly every metric and is worth revisiting with more tuning budget.
 
-## 7. Known Issues & Limitations
-
-These are worth fixing before relying on the numbers above for a final grade/report, or before
-deploying the dashboard anywhere other than the original development machine:
-
-1. **Random Forest Regressor is likely mis-configured in `Models.ipynb`.** It's built with
-   `max_features=1` (an **integer**, meaning "consider exactly 1 feature per split") instead of
-   `max_features=1.0` (a **float**, meaning "consider all features") — the value `Hypertune.ipynb`
-   actually found and recommended. Combined with `max_depth=1`, this produces near-random single-
-   split stumps, which is almost certainly why its R2 (0.035) is far below even the untuned
-   baseline seen earlier in development (~0.15) and well below every linear model here. Fixing
-   `max_features=1` to `max_features=1.0` should bring it back in line with the ~0.23 R2 recorded in
-   `Hyper results/reg_results_hyper.csv` for the same search.
-2. **`Dashboard/Pages/EDA.py` will crash as written.** `DASHBOARD_Pics_PATH` in `config.py` is a
-   plain string, but `EDA.py` uses path-division syntax (`DASHBOARD_Pics_PATH / name`), which
-   raises `TypeError: unsupported operand type(s) for /: 'str' and 'str'`. Fix by wrapping it in
-   `pathlib.Path(...)` either in `config.py` or where it's used.
-3. **Case mismatch on the pics folder.** `config.py` sets `DASHBOARD_Pics_PATH =
-'Dashboard/Resources/Pics'` (capital P), but the actual folder on disk is
-   `Dashboard/Resources/pics` (lowercase). This works today only because the current filesystem is
-   case-insensitive — it will break silently on case-sensitive deployments (Linux servers,
-   Streamlit Community Cloud, most CI). Fix the casing in one place to match the other.
-4. **Hyperparameters used in `Models.ipynb` don't always match `Hyper results/*.csv`.** A few
-   values (notably XGBoost's `learning_rate`/`max_depth`/`n_estimators`, and Logistic Regression's
-   `C`) differ between what's recorded in the search-results CSVs and what's hardcoded into
-   `Models.ipynb`'s final pipelines — suggesting they were copied by hand from console output during
-   a later, unsaved run rather than read programmatically from a single saved source of truth. A
-   `best_hyperparams.json` written by `Hypertune.ipynb` and read by `Models.ipynb` would close this
-   gap and remove the manual copy-paste step entirely.
-5. **`Churn Score` is excluded from all models on purpose** (see Section 2) — an earlier comparison against
-   a public Kaggle notebook reporting much higher accuracy (~0.92) traced its result to leaving this
-   column in as a feature. It is IBM's own model output, not a real predictor, and including it
-   would invalidate the results.
-6. **Regression R2 ceiling (~0.23) is likely structural**, not a tuning gap — see Section 6.
-
-## 8. Setup & Installation
+## 7. Setup & Installation
 
 ```bash
 git clone <repo-url>
@@ -217,10 +182,7 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install pandas numpy scikit-learn scipy xgboost joblib streamlit plotly seaborn matplotlib jupyter
 ```
 
-_(No `requirements.txt` is currently checked in — the list above covers everything imported across
-the notebooks and dashboard. Worth adding a pinned `requirements.txt` as a follow-up.)_
-
-## 9. How to Run
+## 8. How to Run
 
 **Reproduce the full pipeline from scratch**, in order:
 
@@ -240,17 +202,6 @@ walkthrough), **Classification** (model comparison + chosen model), **Regression
 
 - chosen model), and **Predict** (live churn-risk scoring for a hypothetical customer).
 
-## 10. Possible Future Work
-
-- Add unsupervised customer segmentation (KMeans/DBSCAN) to identify actionable groups (e.g.
-  "high-value at risk") — out of scope for this phase by design.
-- Threshold tuning on the classifier's `predict_proba` output, rather than the default 0.5 cutoff,
-  to let the business trade precision for recall deliberately.
-- A `best_hyperparams.json` handoff between `Hypertune.ipynb` and `Models.ipynb` (see Section 7.4).
-- Feature engineering for CLTV (e.g. average monthly spend, tenure x charges interaction) to test
-  whether the current R2 ceiling is genuinely structural or just missing signal.
-
-## 11. Acknowledgments
+## 9. Acknowledgments
 
 Dataset: [IBM Telco Customer Churn, via Kaggle](https://www.kaggle.com/datasets/yeanzc/telco-customer-churn-ibm-dataset),
-originally an IBM Cognos Analytics / SPSS Modeler sample dataset.

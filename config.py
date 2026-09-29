@@ -6,7 +6,7 @@ CLASSIFICATION_RESULTS_PATH = 'Dashboard/Resources/classification_results.csv'
 REGRESSION_RESULTS_PATH = 'Dashboard/Resources/regression_results.csv'
 
 DASHBOARD_RESOURCES_PATH = 'Dashboard/Resources'
-DASHBOARD_Pics_PATH = 'Dashboard/Resources/Pics'
+DASHBOARD_Pics_PATH = 'Dashboard/Resources/pics'
 
 CLASSIFICATION_MODEL_PATH = "Dashboard/Resources/Model/Randf_clf.pkl"
 
