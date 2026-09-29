@@ -7,8 +7,8 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Telco Churn Dashboard",
-    page_icon="📡",
     layout="wide",
+    
 )
 
 PAGES_DIR = Path("Dashboard/Pages")
